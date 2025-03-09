@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 初始化代码示例标签切换
     initCodeTabs();
 
-    // 初始一次加密信息区域
+    // 更新加密信息区域
     updateEncryptionInfo();
 
     // 添加参数下拉菜单的change事件
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('output-format').addEventListener('change', updateEncryptionInfo);
 });
 
-// 更新加密信息区域的全局函数
+// 更新加密信息区域
 function updateEncryptionInfo() {
     const encryptionModeSelect = document.getElementById('encryption-mode');
     const paddingModeSelect = document.getElementById('padding-mode');
@@ -419,409 +419,43 @@ function updateCodeExamples(lang, codeLang) {
     codeBlock.className = `language-${codeLang} text-gray-300`;
 }
 
-// 为Go语言提供简单的占位符实现
-function generateGoPlaceholder(lang, mode, keyLength) {
-    const comments = {
-        en: `// AES-${mode} Encryption in Go\n// Using ${keyLength}-bit key\n// This is a placeholder. Full implementation coming soon.`,
-        zh: `// Go语言中的AES-${mode}加密\n// 使用${keyLength}位密钥\n// 这是占位代码，完整实现即将推出。`,
-        fr: `// Chiffrement AES-${mode} en Go\n// Utilisant une clé de ${keyLength} bits\n// Ceci est un espace réservé. Implémentation complète à venir.`,
-        ja: `// GoでのAES-${mode}暗号化\n// ${keyLength}ビットキーを使用\n// これはプレースホルダーです。完全な実装はまもなく公開されます。`,
-        de: `// AES-${mode} Verschlüsselung in Go\n// Mit ${keyLength}-Bit-Schlüssel\n// Dies ist ein Platzhalter. Vollständige Implementierung kommt bald.`,
-        ko: `// Go에서의 AES-${mode} 암호화\n// ${keyLength}비트 키 사용\n// 이것은 자리 표시자입니다. 전체 구현이 곧 제공됩니다.`
+// 获取本地化的示例文本
+function getExampleText(lang) {
+    return {
+        en: "This is sensitive data to encrypt",
+        zh: "这是需要加密的敏感数据",
+        fr: "Ce sont des données sensibles à chiffrer",
+        ja: "これは暗号化する必要のある機密データです",
+        de: "Dies sind zu verschlüsselnde sensible Daten",
+        ko: "이것은 암호화해야 하는 민감한 데이터입니다"
+    }[lang] || "This is sensitive data to encrypt";
+}
+
+// 获取本地化的结果输出文本
+function getResultText(lang, type) {
+    const texts = {
+        encrypted: {
+            en: "Encrypted result: ",
+            zh: "加密结果: ",
+            fr: "Résultat chiffré: ",
+            ja: "暗号化結果: ",
+            de: "Verschlüsseltes Ergebnis: ",
+            ko: "암호화 결과: "
+        },
+        decrypted: {
+            en: "Decrypted result: ",
+            zh: "解密结果: ",
+            fr: "Résultat déchiffré: ",
+            ja: "復号化結果: ",
+            de: "Entschlüsseltes Ergebnis: ",
+            ko: "복호화 결과: "
+        }
     };
 
-    return `${comments[lang] || comments['en']}
-
-package main
-
-import (
-    "crypto/aes"
-    "crypto/cipher"
-    "crypto/rand"
-    "encoding/base64"
-    "fmt"
-    "io"
-)
-
-// Full implementation of AES-${mode} encryption for Go will be added soon
-// Check back later for the complete code example
-`;
+    return texts[type][lang] || texts[type]['en'];
 }
 
-// 为Rust语言提供简单的占位符实现
-function generateRustPlaceholder(lang, mode, keyLength) {
-    const comments = {
-        en: `// AES-${mode} Encryption in Rust\n// Using ${keyLength}-bit key\n// This is a placeholder. Full implementation coming soon.`,
-        zh: `// Rust语言中的AES-${mode}加密\n// 使用${keyLength}位密钥\n// 这是占位代码，完整实现即将推出。`,
-        fr: `// Chiffrement AES-${mode} en Rust\n// Utilisant une clé de ${keyLength} bits\n// Ceci est un espace réservé. Implémentation complète à venir.`,
-        ja: `// RustでのAES-${mode}暗号化\n// ${keyLength}ビットキーを使用\n// これはプレースホルダーです。完全な実装はまもなく公開されます。`,
-        de: `// AES-${mode} Verschlüsselung in Rust\n// Mit ${keyLength}-Bit-Schlüssel\n// Dies ist ein Platzhalter. Vollständige Implementierung kommt bald.`,
-        ko: `// Rust에서의 AES-${mode} 암호화\n// ${keyLength}비트 키 사용\n// 이것은 자리 표시자입니다. 전체 구현이 곧 제공됩니다.`
-    };
-
-    return `${comments[lang] || comments['en']}
-
-use aes::{Aes128, Aes192, Aes256};
-use block_modes::{BlockMode, Cbc};
-use block_modes::block_padding::Pkcs7;
-
-// Full implementation of AES-${mode} encryption for Rust will be added soon
-// Check back later for the complete code example
-`;
-}
-
-// 添加Python代码生成函数
-function generatePythonCode(lang, mode, padding, keyLength, outputFormat) {
-    const comments = getCommentTexts(lang, mode, keyLength, outputFormat);
-    const needsIV = mode !== 'ECB';
-    const paddingMethod = padding === 'PKCS7' || padding === 'PKCS5' ? 'PKCS7' :
-        padding === 'NO_PADDING' ? 'None' : 'PKCS7';
-
-    return `"""
-${comments.title[lang]}
-"""
-
-from Crypto.Cipher import AES
-import base64
-import os
-import binascii
-
-def encrypt_aes_${mode.toLowerCase()}(plaintext, key${needsIV ? ', iv' : ''}):
-    """
-    ${comments.encrypt[lang]}
-    
-    ${comments.params[lang]}
-        ${comments.plaintext[lang]}
-        ${comments.key[lang]}
-        ${needsIV ? `${comments.iv[lang]}\n` : ''}
-    ${comments.returns[lang]}
-        ${comments.returnEncrypt[lang]}
-    """
-    # 确保密钥长度正确
-    if len(key) != ${keyLength / 8}:
-        raise ValueError(f"Key must be exactly ${keyLength / 8} bytes long for AES-${keyLength}")
-    ${needsIV ? `
-    # 确保IV长度正确
-    if len(iv) != 16:
-        raise ValueError("IV must be exactly 16 bytes long")` : ''}
-    
-    # 将明文转换为字节并填充
-    plaintext_bytes = plaintext.encode('utf-8')
-    ${paddingMethod === 'None' ? `
-    # 无填充模式下，数据长度必须是16的倍数
-    remainder = len(plaintext_bytes) % 16
-    if remainder != 0:
-        plaintext_bytes += b'\\0' * (16 - remainder)` :
-            `
-    # 使用PKCS7填充
-    block_size = 16
-    padding_length = block_size - (len(plaintext_bytes) % block_size)
-    plaintext_bytes += bytes([padding_length]) * padding_length`}
-    
-    # 创建AES密码对象
-    ${needsIV ?
-            `cipher = AES.new(key, AES.MODE_${mode}, iv)` :
-            `cipher = AES.new(key, AES.MODE_${mode})`}
-    
-    # 加密
-    ciphertext = cipher.encrypt(plaintext_bytes)
-    
-    # 返回Base64编码或十六进制编码的密文
-    ${outputFormat === 'base64' ?
-            `return base64.b64encode(ciphertext).decode('utf-8')` :
-            `return ciphertext.hex()`}
-
-def decrypt_aes_${mode.toLowerCase()}(ciphertext, key${needsIV ? ', iv' : ''}):
-    """
-    ${comments.decrypt[lang]}
-    
-    ${comments.params[lang]}
-        ${comments.ciphertext[lang]}
-        ${comments.key[lang]}
-        ${needsIV ? `${comments.iv[lang]}\n` : ''}
-    ${comments.returns[lang]}
-        ${comments.returnDecrypt[lang]}
-    """
-    # 确保密钥长度正确
-    if len(key) != ${keyLength / 8}:
-        raise ValueError(f"Key must be exactly ${keyLength / 8} bytes long for AES-${keyLength}")
-    ${needsIV ? `
-    # 确保IV长度正确
-    if len(iv) != 16:
-        raise ValueError("IV must be exactly 16 bytes long")` : ''}
-    
-    # 解码密文
-    ${outputFormat === 'base64' ?
-            `ciphertext_bytes = base64.b64decode(ciphertext)` :
-            `ciphertext_bytes = bytes.fromhex(ciphertext)`}
-    
-    # 创建AES密码对象
-    ${needsIV ?
-            `cipher = AES.new(key, AES.MODE_${mode}, iv)` :
-            `cipher = AES.new(key, AES.MODE_${mode})`}
-    
-    # 解密
-    decrypted_bytes = cipher.decrypt(ciphertext_bytes)
-    
-    # 移除填充
-    ${paddingMethod === 'None' ? `
-    # 无填充模式下，需要手动移除尾部的空字节
-    decrypted_bytes = decrypted_bytes.rstrip(b'\\0')` :
-            `
-    # 移除PKCS7填充
-    padding_length = decrypted_bytes[-1]
-    if padding_length > 16:
-        raise ValueError("Invalid padding")
-    if decrypted_bytes[-padding_length:] != bytes([padding_length]) * padding_length:
-        raise ValueError("Invalid padding")
-    decrypted_bytes = decrypted_bytes[:-padding_length]`}
-    
-    # 返回解密后的文本
-    return decrypted_bytes.decode('utf-8')
-
-# ${comments.example[lang]}
-key = os.urandom(${keyLength / 8})  # ${keyLength} bits key
-${needsIV ? `iv = os.urandom(16)  # 16 bytes IV` : ''}
-
-# 加密示例
-plaintext = "这是要加密的敏感数据"
-encrypted = encrypt_aes_${mode.toLowerCase()}(plaintext, key${needsIV ? ', iv' : ''})
-print(f"加密结果: {encrypted}")
-
-# 解密示例
-decrypted = decrypt_aes_${mode.toLowerCase()}(encrypted, key${needsIV ? ', iv' : ''})
-print(f"解密结果: {decrypted}")`;
-}
-
-// 生成 JavaScript 代码示例
-function generateJavaScriptCode(lang, mode, padding, keyLength, outputFormat) {
-    const comments = getCommentTexts(lang, mode, keyLength, outputFormat);
-    const needsIV = mode !== 'ECB';
-    const paddingMethod = padding === 'PKCS7' ? 'pkcs7' :
-        padding === 'PKCS5' ? 'pkcs5' :
-            padding === 'NO_PADDING' ? 'nopadding' : 'pkcs7';
-
-    return `// ${comments.title[lang]}
-
-// ${comments.import[lang]} (using CryptoJS)
-const CryptoJS = require('crypto-js');
-
-/**
- * ${comments.encrypt[lang]}
- * 
- * @param {string} plaintext - ${comments.plaintext[lang]}
- * @param {string} key - ${comments.key[lang]}
- * ${needsIV ? `* @param {string} iv - ${comments.iv[lang]}\n` : ''}* @return {string} ${comments.returnEncrypt[lang]}
- */
-function encryptAES${mode}(plaintext, key${needsIV ? ', iv' : ''}) {
-    // 将密钥转换为CryptoJS格式
-    const cryptoKey = CryptoJS.enc.Utf8.parse(key);
-    ${needsIV ? `
-    // 将IV转换为CryptoJS格式
-    const cryptoIV = CryptoJS.enc.Utf8.parse(iv);` : ''}
-    
-    // 加密配置
-    const options = {
-        mode: CryptoJS.mode.${mode},
-        padding: CryptoJS.pad.${paddingMethod === 'nopadding' ? 'NoPadding' : 'Pkcs7'},
-        ${needsIV ? `iv: cryptoIV,` : ''}
-    };
-    
-    // 加密
-    const encrypted = CryptoJS.AES.encrypt(plaintext, cryptoKey, options);
-    
-    // 返回指定格式的输出
-    return ${outputFormat === 'base64' ? 'encrypted.toString()' : 'encrypted.ciphertext.toString()'};
-}
-
-/**
- * ${comments.decrypt[lang]}
- * 
- * @param {string} ciphertext - ${comments.ciphertext[lang]}
- * @param {string} key - ${comments.key[lang]}
- * ${needsIV ? `* @param {string} iv - ${comments.iv[lang]}\n` : ''}* @return {string} ${comments.returnDecrypt[lang]}
- */
-function decryptAES${mode}(ciphertext, key${needsIV ? ', iv' : ''}) {
-    // 将密钥转换为CryptoJS格式
-    const cryptoKey = CryptoJS.enc.Utf8.parse(key);
-    ${needsIV ? `
-    // 将IV转换为CryptoJS格式
-    const cryptoIV = CryptoJS.enc.Utf8.parse(iv);` : ''}
-    
-    // 解密配置
-    const options = {
-        mode: CryptoJS.mode.${mode},
-        padding: CryptoJS.pad.${paddingMethod === 'nopadding' ? 'NoPadding' : 'Pkcs7'},
-        ${needsIV ? `iv: cryptoIV,` : ''}
-    };
-    
-    // 准备密文
-    ${outputFormat === 'base64' ?
-            `// Base64格式直接使用
-    const cipherParams = CryptoJS.lib.CipherParams.create({
-        ciphertext: CryptoJS.enc.Base64.parse(ciphertext)
-    });` :
-            `// Hex格式需要转换
-    const cipherParams = CryptoJS.lib.CipherParams.create({
-        ciphertext: CryptoJS.enc.Hex.parse(ciphertext)
-    });`}
-    
-    // 解密
-    const decrypted = CryptoJS.AES.decrypt(cipherParams, cryptoKey, options);
-    
-    // 转换为UTF-8字符串并返回
-    return decrypted.toString(CryptoJS.enc.Utf8);
-}
-
-// ${comments.example[lang]}
-// 生成${keyLength / 8}字节的随机密钥
-function generateRandomKey(length) {
-    return Array.from(
-        { length },
-        () => String.fromCharCode(Math.floor(Math.random() * 256))
-    ).join('');
-}
-
-const key = generateRandomKey(${keyLength / 8});
-${needsIV ? `const iv = generateRandomKey(16);` : ''}
-
-// 加密示例
-const plaintext = "这是要加密的敏感数据";
-const encrypted = encryptAES${mode}(plaintext, key${needsIV ? ', iv' : ''});
-console.log("加密结果:", encrypted);
-
-// 解密示例
-const decrypted = decryptAES${mode}(encrypted, key${needsIV ? ', iv' : ''});
-console.log("解密结果:", decrypted);`;
-}
-
-// 生成 Java 代码示例
-function generateJavaCode(lang, mode, padding, keyLength, outputFormat) {
-    const comments = getCommentTexts(lang, mode, keyLength, outputFormat);
-    const needsIV = mode !== 'ECB';
-    const paddingName = padding === 'PKCS7' || padding === 'PKCS5' ? 'PKCS5Padding' :
-        padding === 'ISO10126' ? 'ISO10126Padding' :
-            padding === 'NO_PADDING' ? 'NoPadding' : 'PKCS5Padding';
-
-    return `import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
-${needsIV ? `import javax.crypto.spec.IvParameterSpec;` : ''}
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.HexFormat;
-
-/**
- * ${comments.title[lang]}
- */
-public class AESEncryption {
-    
-    /**
-     * ${comments.encrypt[lang]}
-     * 
-     * @param plaintext ${comments.plaintext[lang]}
-     * @param key ${comments.key[lang]}
-     * ${needsIV ? `* @param iv ${comments.iv[lang]}\n` : ''}* @return ${comments.returnEncrypt[lang]}
-     * @throws Exception 加密异常
-     */
-    public static String encrypt(String plaintext, String key${needsIV ? ', String iv' : ''}) throws Exception {
-        // 确保密钥长度正确
-        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
-        if (keyBytes.length != ${keyLength / 8}) {
-            throw new IllegalArgumentException("Key must be exactly ${keyLength / 8} bytes for AES-${keyLength}");
-        }
-        SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, "AES");
-        
-        ${needsIV ? `// 初始化向量
-        byte[] ivBytes = iv.getBytes(StandardCharsets.UTF_8);
-        if (ivBytes.length != 16) {
-            throw new IllegalArgumentException("IV must be exactly 16 bytes");
-        }
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(ivBytes);` : ''}
-        
-        // 初始化加密器
-        Cipher cipher = Cipher.getInstance("AES/${mode}/${paddingName}");
-        ${needsIV ?
-            `cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);` :
-            `cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);`}
-        
-        // 加密
-        byte[] encrypted = cipher.doFinal(plaintext.getBytes(StandardCharsets.UTF_8));
-        
-        // 转换为${outputFormat.toUpperCase()}
-        ${outputFormat === 'base64' ?
-            `return Base64.getEncoder().encodeToString(encrypted);` :
-            `return HexFormat.of().formatHex(encrypted);`}
-    }
-    
-    /**
-     * ${comments.decrypt[lang]}
-     * 
-     * @param ciphertext ${comments.ciphertext[lang]}
-     * @param key ${comments.key[lang]}
-     * ${needsIV ? `* @param iv ${comments.iv[lang]}\n` : ''}* @return ${comments.returnDecrypt[lang]}
-     * @throws Exception 解密异常
-     */
-    public static String decrypt(String ciphertext, String key${needsIV ? ', String iv' : ''}) throws Exception {
-        // 确保密钥长度正确
-        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
-        if (keyBytes.length != ${keyLength / 8}) {
-            throw new IllegalArgumentException("Key must be exactly ${keyLength / 8} bytes for AES-${keyLength}");
-        }
-        SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, "AES");
-        
-        ${needsIV ? `// 初始化向量
-        byte[] ivBytes = iv.getBytes(StandardCharsets.UTF_8);
-        if (ivBytes.length != 16) {
-            throw new IllegalArgumentException("IV must be exactly 16 bytes");
-        }
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(ivBytes);` : ''}
-        
-        // 初始化解密器
-        Cipher cipher = Cipher.getInstance("AES/${mode}/${paddingName}");
-        ${needsIV ?
-            `cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);` :
-            `cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);`}
-        
-        // 解密
-        ${outputFormat === 'base64' ?
-            `byte[] decrypted = cipher.doFinal(Base64.getDecoder().decode(ciphertext));` :
-            `byte[] decrypted = cipher.doFinal(HexFormat.of().parseHex(ciphertext));`}
-        
-        return new String(decrypted, StandardCharsets.UTF_8);
-    }
-    
-    public static void main(String[] args) {
-        try {
-            // 示例密钥
-            String key = generateRandomString(${keyLength / 8}); // ${keyLength}位密钥
-            ${needsIV ? `String iv = generateRandomString(16);  // 16字节IV` : ''}
-            
-            // 加密示例
-            String plaintext = "这是要加密的敏感数据";
-            String encrypted = encrypt(plaintext, key${needsIV ? ', iv' : ''});
-            System.out.println("加密结果: " + encrypted);
-            
-            // 解密示例
-            String decrypted = decrypt(encrypted, key${needsIV ? ', iv' : ''});
-            System.out.println("解密结果: " + decrypted);
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    // 生成随机字符串
-    private static String generateRandomString(int length) {
-        StringBuilder sb = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            sb.append((char)(Math.random() * 256));
-        }
-        return sb.toString();
-    }
-}`;
-}
-
-// 获取翻译的注释文本
+// 获取本地化的注释文本
 function getCommentTexts(lang, mode, keyLength, outputFormat) {
     return {
         title: {
@@ -831,14 +465,6 @@ function getCommentTexts(lang, mode, keyLength, outputFormat) {
             ja: `AES-${mode} 暗号化`,
             de: `AES-${mode} Verschlüsselung`,
             ko: `AES-${mode} 암호화`
-        },
-        import: {
-            en: "Import required libraries",
-            zh: "导入所需库",
-            fr: "Importer les bibliothèques requises",
-            ja: "必要なライブラリをインポート",
-            de: "Erforderliche Bibliotheken importieren",
-            ko: "필요한 라이브러리 가져오기"
         },
         encrypt: {
             en: `Encrypt text using AES-${mode} mode`,
@@ -898,37 +524,533 @@ function getCommentTexts(lang, mode, keyLength, outputFormat) {
         },
         returns: {
             en: "Returns:",
-            zh: "返回值:",
+            zh: "返回:",
             fr: "Retourne:",
             ja: "戻り値:",
             de: "Rückgabe:",
             ko: "반환값:"
         },
         returnEncrypt: {
-            en: `${outputFormat.toUpperCase()} encoded encrypted data`,
-            zh: `${outputFormat.toUpperCase()}编码的加密数据`,
-            fr: `données chiffrées encodées en ${outputFormat.toUpperCase()}`,
-            ja: `${outputFormat.toUpperCase()}エンコードされた暗号化データ`,
-            de: `${outputFormat.toUpperCase()}-codierte verschlüsselte Daten`,
-            ko: `${outputFormat.toUpperCase()} 인코딩된 암호화 데이터`
+            en: `${outputFormat.toUpperCase()} encoded encrypted string`,
+            zh: `${outputFormat.toUpperCase()}编码的加密字符串`,
+            fr: `Chaîne chiffrée encodée en ${outputFormat.toUpperCase()}`,
+            ja: `${outputFormat.toUpperCase()}エンコードされた暗号化文字列`,
+            de: `${outputFormat.toUpperCase()}-codierte verschlüsselte Zeichenfolge`,
+            ko: `${outputFormat.toUpperCase()}로 인코딩된 암호화된 문자열`
         },
         returnDecrypt: {
-            en: "Decrypted text",
-            zh: "解密后的文本",
-            fr: "Texte déchiffré",
-            ja: "復号化されたテキスト",
-            de: "Entschlüsselter Text",
-            ko: "복호화된 텍스트"
+            en: "Decrypted string",
+            zh: "解密后的字符串",
+            fr: "Chaîne déchiffrée",
+            ja: "復号化された文字列",
+            de: "Entschlüsselte Zeichenfolge",
+            ko: "복호화된 문자열"
         },
         example: {
             en: "Example usage",
-            zh: "使用示例",
+            zh: "示例用法",
             fr: "Exemple d'utilisation",
             ja: "使用例",
-            de: "Verwendungsbeispiel",
-            ko: "사용 예"
+            de: "Beispielverwendung",
+            ko: "사용 예시"
         }
     };
+}
+
+// 生成 Go 代码示例
+function generateGoCode(lang, mode, padding, keyLength, outputFormat) {
+    const comments = getCommentTexts(lang, mode, keyLength, outputFormat);
+    const needsIV = mode !== 'ECB';
+    const exampleText = getExampleText(lang);
+    const encryptedResult = getResultText(lang, 'encrypted');
+    const decryptedResult = getResultText(lang, 'decrypted');
+
+    return `package main
+
+import (
+    "crypto/aes"
+    "crypto/cipher"
+    "crypto/rand"
+    "encoding/base64"
+    "encoding/hex"
+    "errors"
+    "fmt"
+    "io"
+    "bytes"
+)
+
+// ${comments.encrypt[lang]}
+func encryptAes${mode}(plaintext string, key []byte${needsIV ? ', iv []byte' : ''}) (string, error) {
+    // Check key length
+    if len(key) != ${keyLength / 8} {
+        return "", fmt.Errorf("key must be exactly ${keyLength / 8} bytes for AES-${keyLength}")
+    }
+    
+    ${needsIV ? `// Check IV length
+    if len(iv) != aes.BlockSize {
+        return "", fmt.Errorf("IV must be exactly %d bytes", aes.BlockSize)
+    }` : ''}
+    
+    // Convert plaintext to bytes
+    plaintextBytes := []byte(plaintext)
+    
+    // Create new cipher block
+    block, err := aes.NewCipher(key)
+    if err != nil {
+        return "", err
+    }
+    
+    // Padding
+    ${padding === 'NO_PADDING' ?
+            `// For no padding, plaintext must be a multiple of the block size
+    if len(plaintextBytes) % aes.BlockSize != 0 {
+        return "", errors.New("plaintext length must be multiple of block size when using no padding")
+    }
+    paddedPlaintext := plaintextBytes` :
+            `// Add PKCS7 padding
+    paddedPlaintext := addPKCS7Padding(plaintextBytes, aes.BlockSize)`}
+    
+    // Encrypt based on mode
+    var ciphertext []byte
+    ${mode === 'ECB' ?
+            `// ECB mode encryption (note: ECB is not secure for most applications)
+    ciphertext = make([]byte, len(paddedPlaintext))
+    for bs, be := 0, block.BlockSize(); bs < len(paddedPlaintext); bs, be = bs+block.BlockSize(), be+block.BlockSize() {
+        block.Encrypt(ciphertext[bs:be], paddedPlaintext[bs:be])
+    }` : mode === 'CBC' ?
+                `// CBC mode encryption
+    ciphertext = make([]byte, len(paddedPlaintext))
+    cbc := cipher.NewCBCEncrypter(block, iv)
+    cbc.CryptBlocks(ciphertext, paddedPlaintext)` : mode === 'CFB' ?
+                    `// CFB mode encryption
+    ciphertext = make([]byte, len(paddedPlaintext))
+    stream := cipher.NewCFBEncrypter(block, iv)
+    stream.XORKeyStream(ciphertext, paddedPlaintext)` :
+                    `// Other mode encryption (simplified example)
+    ciphertext = make([]byte, len(paddedPlaintext))
+    stream := cipher.NewCTR(block, iv)
+    stream.XORKeyStream(ciphertext, paddedPlaintext)`}
+    
+    // Convert to output format
+    ${outputFormat === 'base64' ?
+            `return base64.StdEncoding.EncodeToString(ciphertext), nil` :
+            `return hex.EncodeToString(ciphertext), nil`}
+}
+
+// ${comments.decrypt[lang]}
+func decryptAes${mode}(ciphertext string, key []byte${needsIV ? ', iv []byte' : ''}) (string, error) {
+    // Check key length
+    if len(key) != ${keyLength / 8} {
+        return "", fmt.Errorf("key must be exactly ${keyLength / 8} bytes for AES-${keyLength}")
+    }
+    
+    ${needsIV ? `// Check IV length
+    if len(iv) != aes.BlockSize {
+        return "", fmt.Errorf("IV must be exactly %d bytes", aes.BlockSize)
+    }` : ''}
+    
+    // Decode from format
+    var encryptedBytes []byte
+    var err error
+    ${outputFormat === 'base64' ?
+            `encryptedBytes, err = base64.StdEncoding.DecodeString(ciphertext)` :
+            `encryptedBytes, err = hex.DecodeString(ciphertext)`}
+    if err != nil {
+        return "", err
+    }
+    
+    // Create new cipher block
+    block, err := aes.NewCipher(key)
+    if err != nil {
+        return "", err
+    }
+    
+    // Block size check
+    if len(encryptedBytes) % aes.BlockSize != 0 {
+        return "", errors.New("ciphertext is not a multiple of the block size")
+    }
+    
+    // Decrypt based on mode
+    var plaintext []byte
+    ${mode === 'ECB' ?
+            `// ECB mode
+    // Process each block
+    let mut decrypted_data = Vec::new();
+    for chunk in encrypted_data.chunks(16) {
+        let mut block = [0u8; 16];
+        block.copy_from_slice(chunk);
+        
+        cipher.decrypt_block(&mut block);
+        decrypted_data.extend_from_slice(&block);
+    }
+    
+    // Remove padding if needed
+    ${padding === 'NO_PADDING' ?
+                '// No padding to remove' :
+                `// Remove PKCS7 padding
+        let padding_len = *decrypted_data.last().unwrap_or(&0) as usize;
+        if padding_len > 0 && padding_len <= 16 {
+            decrypted_data.truncate(decrypted_data.len() - padding_len);
+        }`}` :
+            `// ${mode} mode
+    let decrypted_data = ${mode}::new(&cipher, iv.into())
+        .decrypt_padded_vec_mut::<Pkcs7>(&encrypted_data)?;`}
+    
+    // Convert to string
+    Ok(String::from_utf8(decrypted_data)?)
+}
+
+${padding !== 'NO_PADDING' ?
+            `// Add PKCS7 padding
+func addPKCS7Padding(data []byte, blockSize int) []byte {
+    padding := blockSize - (len(data) % blockSize)
+    padtext := bytes.Repeat([]byte{byte(padding)}, padding)
+    return append(data, padtext...)
+}
+
+// Remove PKCS7 padding
+func removePKCS7Padding(data []byte, blockSize int) ([]byte, error) {
+    length := len(data)
+    if length == 0 {
+        return nil, errors.New("invalid padding: data is empty")
+    }
+    
+    padLength := int(data[length-1])
+    if padLength > blockSize || padLength == 0 {
+        return nil, errors.New("invalid padding size")
+    }
+    
+    // Check all padding bytes
+    for i := length - padLength; i < length; i++ {
+        if data[i] != byte(padLength) {
+            return nil, errors.New("invalid padding bytes")
+        }
+    }
+    
+    return data[:length-padLength], nil
+}` : ''}
+
+func main() {
+    // Example usage
+    // Generate random key${needsIV ? ' and IV' : ''}
+    key := make([]byte, ${keyLength / 8})
+    if _, err := io.ReadFull(rand.Reader, key); err != nil {
+        fmt.Println("Error generating key:", err)
+        return
+    }
+    
+    ${needsIV ? `iv := make([]byte, aes.BlockSize)
+    if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+        fmt.Println("Error generating IV:", err)
+        return
+    }` : ''}
+    
+    plaintext := "${exampleText}"
+    
+    // Encrypt
+    encrypted, err := encryptAes${mode}(plaintext, key${needsIV ? ', iv' : ''})
+    if err != nil {
+        fmt.Println("Error encrypting:", err)
+        return
+    }
+    fmt.Println("${encryptedResult}{$encrypted}")
+    
+    // Decrypt
+    decrypted, err := decryptAes${mode}(encrypted, key${needsIV ? ', iv' : ''})
+    if err != nil {
+        fmt.Println("Error decrypting:", err)
+        return
+    }
+    fmt.Println("${decryptedResult}{$decrypted}")
+}`;
+}
+
+// 生成 Rust 代码示例
+function generateRustCode(lang, mode, padding, keyLength, outputFormat) {
+    const comments = getCommentTexts(lang, mode, keyLength, outputFormat);
+    const needsIV = mode !== 'ECB';
+    const exampleText = getExampleText(lang);
+    const encryptedResult = getResultText(lang, 'encrypted');
+    const decryptedResult = getResultText(lang, 'decrypted');
+
+    return `// ${comments.title[lang]}
+use aes::cipher::{BlockEncrypt, BlockDecrypt, KeyInit};
+use aes::Aes${keyLength == 128 ? '128' : keyLength == 192 ? '192' : '256'};
+${mode !== 'ECB' ? `use aes::cipher::{block_padding::Pkcs7, BlockMode, BlockModeEncrypt, BlockModeDecrypt};
+use ${mode.toLowerCase()}::${mode};` : ''}
+${outputFormat === 'base64' ? 'use base64::{encode, decode};' : 'use hex::{encode as hex_encode, decode as hex_decode};'}
+use std::error::Error;
+
+fn main() -> Result<(), Box<dyn Error>> {
+    // Generate random key
+    let key = rand::random::<[u8; ${keyLength / 8}]>();
+    ${needsIV ? `// Generate random IV
+    let iv = rand::random::<[u8; 16]>();` : ''}
+    
+    let plaintext = "${exampleText}";
+    
+    // Encrypt
+    let encrypted = encrypt_aes_${mode.toLowerCase()}(plaintext, &key${needsIV ? ', &iv' : ''})?;
+    println!("${encryptedResult}{$encrypted}");
+    
+    // Decrypt
+    let decrypted = decrypt_aes_${mode.toLowerCase()}(&encrypted, &key${needsIV ? ', &iv' : ''})?;
+    println!("${decryptedResult}{$decrypted}");
+    
+    Ok(())
+}
+
+// ${comments.encrypt[lang]}
+fn encrypt_aes_${mode.toLowerCase()}(plaintext: &str, key: &[u8; ${keyLength / 8}]${needsIV ? ', iv: &[u8; 16]' : ''}) -> Result<String, Box<dyn Error>> {
+    // Convert plaintext to bytes
+    let plaintext_bytes = plaintext.as_bytes();
+    
+    // Initialize cipher
+    let cipher = Aes${keyLength == 128 ? '128' : keyLength == 192 ? '192' : '256'}::new(key.into());
+    
+    ${mode === 'ECB' ?
+            `// ECB mode (note: ECB is not secure for most applications)
+    // Add padding
+    let mut padded_data = Vec::new();
+    ${padding === 'NO_PADDING' ?
+                `// Ensure data is a multiple of block size
+        if plaintext_bytes.len() % 16 != 0 {
+            return Err("Data length must be a multiple of 16 bytes for no padding".into());
+        }
+        padded_data.extend_from_slice(plaintext_bytes);` :
+                `// Add PKCS7 padding
+        for chunk in plaintext_bytes.chunks(16) {
+            let mut block = [0u8; 16];
+            let padding_len = 16 - chunk.len();
+            
+            for (i, &byte) in chunk.iter().enumerate() {
+                block[i] = byte;
+            }
+            
+            // Fill the rest with padding
+            for i in chunk.len()..16 {
+                block[i] = padding_len as u8;
+            }
+            
+            padded_data.extend_from_slice(&block);
+        }`}
+    
+    // Process each block
+    let mut encrypted_data = Vec::new();
+    for chunk in padded_data.chunks(16) {
+        let mut block = [0u8; 16];
+        block.copy_from_slice(chunk);
+        
+        cipher.encrypt_block(&mut block);
+        encrypted_data.extend_from_slice(&block);
+    }` :
+            `// ${mode} mode
+    let encrypted_data = ${mode}::new(&cipher, iv.into())
+        .encrypt_padded_vec_mut::<Pkcs7>(plaintext_bytes);`}
+    
+    // Convert to ${outputFormat.toUpperCase()}
+    ${outputFormat === 'base64' ?
+            'Ok(encode(encrypted_data))' :
+            'Ok(hex_encode(encrypted_data))'}
+}
+
+// ${comments.decrypt[lang]}
+fn decrypt_aes_${mode.toLowerCase()}(ciphertext: &str, key: &[u8; ${keyLength / 8}]${needsIV ? ', iv: &[u8; 16]' : ''}) -> Result<String, Box<dyn Error>> {
+    // Decode ${outputFormat.toUpperCase()}
+    ${outputFormat === 'base64' ?
+            'let encrypted_data = decode(ciphertext)?;' :
+            'let encrypted_data = hex_decode(ciphertext)?;'}
+    
+    // Initialize cipher
+    let cipher = Aes${keyLength == 128 ? '128' : keyLength == 192 ? '192' : '256'}::new(key.into());
+    
+    ${mode === 'ECB' ?
+            `// ECB mode
+    // Process each block
+    let mut decrypted_data = Vec::new();
+    for chunk in encrypted_data.chunks(16) {
+        let mut block = [0u8; 16];
+        block.copy_from_slice(chunk);
+        
+        cipher.decrypt_block(&mut block);
+        decrypted_data.extend_from_slice(&block);
+    }
+    
+    // Remove padding if needed
+    ${padding === 'NO_PADDING' ?
+                '// No padding to remove' :
+                `// Remove PKCS7 padding
+        let padding_len = *decrypted_data.last().unwrap_or(&0) as usize;
+        if padding_len > 0 && padding_len <= 16 {
+            decrypted_data.truncate(decrypted_data.len() - padding_len);
+        }`}` :
+            `// ${mode} mode
+    let decrypted_data = ${mode}::new(&cipher, iv.into())
+        .decrypt_padded_vec_mut::<Pkcs7>(&encrypted_data)?;`}
+    
+    // Convert to string
+    Ok(String::from_utf8(decrypted_data)?)
+}
+`;
+}
+
+// 生成 C# 代码示例
+function generateCSharpCode(lang, mode, padding, keyLength, outputFormat) {
+    const comments = getCommentTexts(lang, mode, keyLength, outputFormat);
+    const needsIV = mode !== 'ECB';
+    const exampleText = getExampleText(lang);
+    const encryptedResult = getResultText(lang, 'encrypted');
+    const decryptedResult = getResultText(lang, 'decrypted');
+
+    // C# 填充模式
+    const paddingName = padding === 'PKCS7' || padding === 'PKCS5' ? 'PKCS7' :
+        padding === 'ISO10126' ? 'ISO10126' :
+            padding === 'ANSIX923' ? 'ANSIX923' :
+                padding === 'NO_PADDING' ? 'None' : 'PKCS7';
+
+    return `using System;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace AesEncryptionExample
+{
+    /// <summary>
+    /// ${comments.title[lang]}
+    /// </summary>
+    public class AesEncryption
+    {
+        /// <summary>
+        /// ${comments.encrypt[lang]}
+        /// </summary>
+        public static string Encrypt(string plaintext, byte[] key${needsIV ? ', byte[] iv' : ''})
+        {
+            // Validate key length
+            if (key.Length != ${keyLength / 8})
+                throw new ArgumentException($"Key must be exactly ${keyLength / 8} bytes for AES-${keyLength}");
+            
+            ${needsIV ? `// Validate IV length
+            if (iv.Length != 16)
+                throw new ArgumentException("IV must be exactly 16 bytes");` : ''}
+            
+            // Convert plaintext to bytes
+            byte[] plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
+            
+            // Create AES instance
+            using (Aes aes = Aes.Create())
+            {
+                aes.KeySize = ${keyLength};
+                aes.Key = key;
+                ${needsIV ? `aes.IV = iv;` : ''}
+                aes.Mode = CipherMode.${mode};
+                aes.Padding = PaddingMode.${paddingName};
+                
+                // Create encryptor
+                ICryptoTransform encryptor = aes.CreateEncryptor();
+                
+                // Encrypt
+                byte[] encrypted;
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+                    {
+                        cs.Write(plaintextBytes, 0, plaintextBytes.Length);
+                        cs.FlushFinalBlock();
+                    }
+                    encrypted = ms.ToArray();
+                }
+                
+                // Convert to ${outputFormat}
+                ${outputFormat === 'base64' ?
+            `return Convert.ToBase64String(encrypted);` :
+            `return BitConverter.ToString(encrypted).Replace("-", "").ToLower();`}
+            }
+        }
+        
+        /// <summary>
+        /// ${comments.decrypt[lang]}
+        /// </summary>
+        public static string Decrypt(string ciphertext, byte[] key${needsIV ? ', byte[] iv' : ''})
+        {
+            // Validate key length
+            if (key.Length != ${keyLength / 8})
+                throw new ArgumentException($"Key must be exactly ${keyLength / 8} bytes for AES-${keyLength}");
+            
+            ${needsIV ? `// Validate IV length
+            if (iv.Length != 16)
+                throw new ArgumentException("IV must be exactly 16 bytes");` : ''}
+            
+            // Convert from ${outputFormat}
+            byte[] ciphertextBytes = ${outputFormat === 'base64' ?
+            `Convert.FromBase64String(ciphertext);` :
+            `HexStringToByteArray(ciphertext);`}
+            
+            // Create AES instance
+            using (Aes aes = Aes.Create())
+            {
+                aes.KeySize = ${keyLength};
+                aes.Key = key;
+                ${needsIV ? `aes.IV = iv;` : ''}
+                aes.Mode = CipherMode.${mode};
+                aes.Padding = PaddingMode.${paddingName};
+                
+                // Create decryptor
+                ICryptoTransform decryptor = aes.CreateDecryptor();
+                
+                // Decrypt
+                byte[] decrypted;
+                using (MemoryStream ms = new MemoryStream(ciphertextBytes))
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (MemoryStream output = new MemoryStream())
+                        {
+                            cs.CopyTo(output);
+                            decrypted = output.ToArray();
+                        }
+                    }
+                }
+                
+                // Convert to string
+                return Encoding.UTF8.GetString(decrypted);
+            }
+        }
+        
+        ${outputFormat === 'hex' ? `
+        // Helper to convert hex string to byte array
+        private static byte[] HexStringToByteArray(string hex)
+        {
+            int NumberChars = hex.Length;
+            byte[] bytes = new byte[NumberChars / 2];
+            for (int i = 0; i < NumberChars; i += 2)
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            return bytes;
+        }` : ''}
+        
+        // Example usage
+        public static void Main()
+        {
+            // Generate random key${needsIV ? ' and IV' : ''}
+            byte[] key = new byte[${keyLength / 8}];
+            using (var rng = RandomNumberGenerator.Create())
+                rng.GetBytes(key);
+            
+            ${needsIV ? `byte[] iv = new byte[16];
+            using (var rng = RandomNumberGenerator.Create())
+                rng.GetBytes(iv);` : ''}
+            
+            string plaintext = "${exampleText}";
+            
+            // Encrypt
+            string encrypted = Encrypt(plaintext, key${needsIV ? ', iv' : ''});
+            Console.WriteLine("${encryptedResult}{$encrypted}");
+            
+            // Decrypt
+            string decrypted = Decrypt(encrypted, key${needsIV ? ', iv' : ''});
+            Console.WriteLine("${decryptedResult}{$decrypted}");
+        }
+    }
+}`;
 }
 
 // 生成 PHP 代码示例
@@ -939,25 +1061,16 @@ function generatePHPCode(lang, mode, padding, keyLength, outputFormat) {
     const encryptedResult = getResultText(lang, 'encrypted');
     const decryptedResult = getResultText(lang, 'decrypted');
 
-    // PHP中的OpenSSL填充模式
-    const opensslPadding = padding === 'NO_PADDING' ? 'OPENSSL_ZERO_PADDING' : 'OPENSSL_PKCS1_PADDING';
-
-    // PHP中的加密方法
-    const cipherMethod = `aes-${keyLength}-${mode.toLowerCase()}`;
+    // PHP中的加密方法名称
+    const methodName = `aes-${keyLength}-${mode.toLowerCase()}`;
 
     return `<?php
 /**
  * ${comments.title[lang]}
- * 
- * PHP implementation using OpenSSL
  */
 
 /**
  * ${comments.encrypt[lang]}
- * 
- * @param string $plaintext ${comments.plaintext[lang]}
- * @param string $key ${comments.key[lang]}
- * ${needsIV ? `* @param string $iv ${comments.iv[lang]}\n` : ''}* @return string ${comments.returnEncrypt[lang]}
  */
 function encryptAes${mode}($plaintext, $key${needsIV ? ', $iv' : ''}) {
     // Validate key length
@@ -970,28 +1083,40 @@ function encryptAes${mode}($plaintext, $key${needsIV ? ', $iv' : ''}) {
         throw new Exception("IV must be exactly 16 bytes");
     }` : ''}
     
-    // PKCS7 padding is handled automatically by OpenSSL
-    ${padding === 'NO_PADDING' ?
-            `// For no padding, data length must be a multiple of 16
-    $paddingLength = 16 - (strlen($plaintext) % 16);
-    if ($paddingLength < 16) {
-        $plaintext .= str_repeat("\\0", $paddingLength);
-    }` : ''}
+    // Set up encryption method
+    $method = '${methodName}';
     
-    // Encrypt using OpenSSL
+    // Handle padding
+    ${padding === 'NO_PADDING' ?
+            `// For no padding, ensure data is block size multiple
+    $block = 16;
+    $pad = $block - (strlen($plaintext) % $block);
+    if ($pad < $block) {
+        $plaintext .= str_repeat("\\0", $pad);
+    }
+    
+    // Encrypt with OPENSSL_RAW_DATA and OPENSSL_ZERO_PADDING
     $encrypted = openssl_encrypt(
         $plaintext,
-        '${cipherMethod}',
+        $method,
         $key,
-        ${padding === 'NO_PADDING' ? 'OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING' : 'OPENSSL_RAW_DATA'},
-        ${needsIV ? '$iv' : "''"}
-    );
+        OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
+        ${needsIV ? '$iv' : '""'}
+    );` :
+            `// Encrypt with default PKCS7 padding
+    $encrypted = openssl_encrypt(
+        $plaintext,
+        $method,
+        $key,
+        OPENSSL_RAW_DATA,
+        ${needsIV ? '$iv' : '""'}
+    );`}
     
     if ($encrypted === false) {
         throw new Exception("Encryption failed: " . openssl_error_string());
     }
     
-    // Convert to ${outputFormat.toUpperCase()}
+    // Format output
     ${outputFormat === 'base64' ?
             `return base64_encode($encrypted);` :
             `return bin2hex($encrypted);`}
@@ -999,10 +1124,6 @@ function encryptAes${mode}($plaintext, $key${needsIV ? ', $iv' : ''}) {
 
 /**
  * ${comments.decrypt[lang]}
- * 
- * @param string $ciphertext ${comments.ciphertext[lang]}
- * @param string $key ${comments.key[lang]}
- * ${needsIV ? `* @param string $iv ${comments.iv[lang]}\n` : ''}* @return string ${comments.returnDecrypt[lang]}
  */
 function decryptAes${mode}($ciphertext, $key${needsIV ? ', $iv' : ''}) {
     // Validate key length
@@ -1015,389 +1136,60 @@ function decryptAes${mode}($ciphertext, $key${needsIV ? ', $iv' : ''}) {
         throw new Exception("IV must be exactly 16 bytes");
     }` : ''}
     
-    // Convert from ${outputFormat.toUpperCase()} to binary
-    ${outputFormat === 'base64' ?
-            `$encryptedData = base64_decode($ciphertext);` :
-            `$encryptedData = hex2bin($ciphertext);`}
+    // Set up decryption method
+    $method = '${methodName}';
     
-    // Decrypt using OpenSSL
-    $decrypted = openssl_decrypt(
-        $encryptedData,
-        '${cipherMethod}',
+    // Decode input
+    ${outputFormat === 'base64' ?
+            `$encryptedRaw = base64_decode($ciphertext);` :
+            `$encryptedRaw = hex2bin($ciphertext);`}
+    
+    // Decrypt
+    ${padding === 'NO_PADDING' ?
+            `$decrypted = openssl_decrypt(
+        $encryptedRaw,
+        $method,
         $key,
-        ${padding === 'NO_PADDING' ? 'OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING' : 'OPENSSL_RAW_DATA'},
-        ${needsIV ? '$iv' : "''"}
+        OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
+        ${needsIV ? '$iv' : '""'}
     );
+    
+    // Remove null padding
+    $decrypted = rtrim($decrypted, "\\0");` :
+            `$decrypted = openssl_decrypt(
+        $encryptedRaw,
+        $method,
+        $key,
+        OPENSSL_RAW_DATA,
+        ${needsIV ? '$iv' : '""'}
+    );`}
     
     if ($decrypted === false) {
         throw new Exception("Decryption failed: " . openssl_error_string());
     }
     
-    ${padding === 'NO_PADDING' ?
-            `// For no padding, we need to manually remove null bytes
-    $decrypted = rtrim($decrypted, "\\0");` : ''}
-    
     return $decrypted;
 }
 
-/**
- * Generate a random string of specified length
- */
-function generateRandomBytes($length) {
-    return random_bytes($length);
-}
-
-// ${comments.example[lang]}
+// Example usage
 try {
     // Generate random key${needsIV ? ' and IV' : ''}
-    $key = generateRandomBytes(${keyLength / 8});
-    ${needsIV ? `$iv = generateRandomBytes(16);` : ''}
+    $key = random_bytes(${keyLength / 8});
+    ${needsIV ? `$iv = random_bytes(16);` : ''}
     
-    // Example text
     $plaintext = "${exampleText}";
     
     // Encrypt
     $encrypted = encryptAes${mode}($plaintext, $key${needsIV ? ', $iv' : ''});
-    echo "${encryptedResult}" . $encrypted . "\\n";
+    echo "${encryptedResult}{$encrypted}\n";
     
     // Decrypt
     $decrypted = decryptAes${mode}($encrypted, $key${needsIV ? ', $iv' : ''});
-    echo "${decryptedResult}" . $decrypted . "\\n";
+    echo "${decryptedResult}{$decrypted}\n";
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage() . "\\n";
-}`;
+    echo "Error: " . $e->getMessage() . "\n";
 }
-
-// 生成 Rust 代码示例
-function generateRustCode(lang, mode, padding, keyLength, outputFormat) {
-    const comments = getCommentTexts(lang, mode, keyLength, outputFormat);
-    const needsIV = mode !== 'ECB';
-    const exampleText = getExampleText(lang);
-    const encryptedResult = getResultText(lang, 'encrypted');
-    const decryptedResult = getResultText(lang, 'decrypted');
-
-    // Rust特定的代码生成逻辑
-    const rustMode = mode.toLowerCase();
-    const rustPaddingCrate = padding === 'NO_PADDING' ? '' : 'block-padding = "0.3"';
-
-    return `// ${comments.title[lang]}
-use aes::cipher::{
-    BlockCipher, BlockDecrypt, BlockEncrypt, 
-    generic_array::GenericArray, 
-    NewBlockCipher
-};
-${mode !== 'ECB' ? `use aes::cipher::{StreamCipher, StreamCipherSeek};` : ''}
-use aes::{Aes128, Aes192, Aes256};
-${mode === 'CBC' ? `use block_modes::{BlockMode, Cbc};
-use block_modes::block_padding::Padding;` : ''}
-${padding !== 'NO_PADDING' ? `use block_padding::{Pkcs7, Zeropad};` : ''}
-${outputFormat === 'base64' ? `use base64::{encode, decode};` : `use hex::{encode, decode};`}
-use std::str;
-
-// ${comments.encrypt[lang]}
-fn encrypt_aes_${rustMode}(plaintext: &str, key: &[u8]${needsIV ? ', iv: &[u8]' : ''}) -> Result<String, Box<dyn std::error::Error>> {
-    // Verify key length
-    if key.len() != ${keyLength / 8} {
-        return Err(format!("Key must be exactly ${keyLength / 8} bytes for AES-${keyLength}").into());
-    }
-    
-    ${needsIV ? `// Verify IV length
-    if iv.len() != 16 {
-        return Err("IV must be exactly 16 bytes".into());
-    }` : ''}
-    
-    // Convert plaintext to bytes
-    let plaintext_bytes = plaintext.as_bytes();
-    
-    // Initialize cipher based on key size
-    ${keyLength === '128' ?
-            `type Aes = Aes128;` : keyLength === '192' ?
-                `type Aes = Aes192;` :
-                `type Aes = Aes256;`}
-    
-    ${mode === 'ECB' ?
-            `// ECB mode implementation
-    // Create key
-    let key = GenericArray::from_slice(key);
-    let cipher = Aes::new(&key);
-    
-    // Add padding
-    ${padding === 'NO_PADDING' ?
-                `// No padding - ensure data is a multiple of block size
-    if plaintext_bytes.len() % 16 != 0 {
-        return Err("For no padding, data length must be a multiple of 16 bytes".into());
-    }
-    let mut padded_data = plaintext_bytes.to_vec();` :
-                `// Add PKCS7 padding
-    let mut padded_data = Vec::with_capacity(plaintext_bytes.len() + 16);
-    padded_data.extend_from_slice(plaintext_bytes);
-    let block_size = 16;
-    let padding_size = block_size - (plaintext_bytes.len() % block_size);
-    padded_data.extend(std::iter::repeat(padding_size as u8).take(padding_size));`}
-    
-    // Encrypt in ECB mode
-    let mut blocks = Vec::new();
-    for chunk in padded_data.chunks(16) {
-        let mut block = GenericArray::clone_from_slice(chunk);
-        cipher.encrypt_block(&mut block);
-        blocks.extend_from_slice(&block);
-    }` :
-            mode === 'CBC' ?
-                `// CBC mode implementation
-    // Setup cipher
-    type Cipher = Cbc<Aes, ${padding === 'NO_PADDING' ? 'Zeropad' : 'Pkcs7'}>;
-    let cipher = Cipher::new_from_slices(key, iv)?;
-    
-    // Encrypt
-    let blocks = cipher.encrypt_vec(plaintext_bytes);` :
-                `// Stream cipher mode implementation
-    // This is a simplified example and may need adjustments
-    let key = GenericArray::from_slice(key);
-    let iv = GenericArray::from_slice(iv);
-    
-    // Initialize cipher
-    let mut cipher = ${rustMode}::new(&key, &iv);
-    
-    // Encrypt
-    let mut blocks = plaintext_bytes.to_vec();
-    cipher.encrypt(&mut blocks);`}
-    
-    // Convert to ${outputFormat.toUpperCase()} format
-    ${outputFormat === 'base64' ?
-            `Ok(encode(&blocks))` :
-            `Ok(encode(&blocks))`}
-}
-
-// ${comments.decrypt[lang]}
-fn decrypt_aes_${rustMode}(ciphertext: &str, key: &[u8]${needsIV ? ', iv: &[u8]' : ''}) -> Result<String, Box<dyn std::error::Error>> {
-    // Verify key length
-    if key.len() != ${keyLength / 8} {
-        return Err(format!("Key must be exactly ${keyLength / 8} bytes for AES-${keyLength}").into());
-    }
-    
-    ${needsIV ? `// Verify IV length
-    if iv.len() != 16 {
-        return Err("IV must be exactly 16 bytes".into());
-    }` : ''}
-    
-    // Decode from ${outputFormat.toUpperCase()}
-    let ciphertext_bytes = decode(ciphertext)?;
-    
-    // Initialize cipher based on key size
-    ${keyLength === '128' ?
-            `type Aes = Aes128;` : keyLength === '192' ?
-                `type Aes = Aes192;` :
-                `type Aes = Aes256;`}
-    
-    ${mode === 'ECB' ?
-            `// ECB mode decryption
-    // Create key
-    let key = GenericArray::from_slice(key);
-    let cipher = Aes::new(&key);
-    
-    // Decrypt blocks
-    let mut plaintext = Vec::new();
-    for chunk in ciphertext_bytes.chunks(16) {
-        let mut block = GenericArray::clone_from_slice(chunk);
-        cipher.decrypt_block(&mut block);
-        plaintext.extend_from_slice(&block);
-    }
-    
-    // Remove padding
-    ${padding === 'NO_PADDING' ?
-                `// No padding - trim trailing zeros if needed
-    let mut plaintext = plaintext.to_vec();
-    while plaintext.last() == Some(&0) {
-        plaintext.pop();
-    }` :
-                `// Remove PKCS7 padding
-    let padding_size = plaintext.last().unwrap_or(&0);
-    if *padding_size as usize <= 16 {
-        plaintext.truncate(plaintext.len() - *padding_size as usize);
-    }`}` :
-            mode === 'CBC' ?
-                `// CBC mode decryption
-    // Setup cipher
-    type Cipher = Cbc<Aes, ${padding === 'NO_PADDING' ? 'Zeropad' : 'Pkcs7'}>;
-    let cipher = Cipher::new_from_slices(key, iv)?;
-    
-    // Decrypt
-    let plaintext = cipher.decrypt_vec(&ciphertext_bytes)?;` :
-                `// Stream cipher mode decryption
-    let key = GenericArray::from_slice(key);
-    let iv = GenericArray::from_slice(iv);
-    
-    // Initialize cipher
-    let mut cipher = ${rustMode}::new(&key, &iv);
-    
-    // Decrypt
-    let mut plaintext = ciphertext_bytes.to_vec();
-    cipher.decrypt(&mut plaintext);`}
-    
-    // Convert bytes to string
-    Ok(str::from_utf8(&plaintext)?.to_string())
-}
-
-// Generate random bytes
-fn generate_random_bytes(length: usize) -> Vec<u8> {
-    (0..length).map(|_| rand::random::<u8>()).collect()
-}
-
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Generate random key${needsIV ? ' and IV' : ''}
-    let key = generate_random_bytes(${keyLength / 8});
-    ${needsIV ? `let iv = generate_random_bytes(16);` : ''}
-    
-    // Example data
-    let plaintext = "${exampleText}";
-    
-    // Encrypt
-    let encrypted = encrypt_aes_${rustMode}(&plaintext, &key${needsIV ? ', &iv' : ''})?;
-    println!("${encryptedResult}{}", encrypted);
-    
-    // Decrypt
-    let decrypted = decrypt_aes_${rustMode}(&encrypted, &key${needsIV ? ', &iv' : ''})?;
-    println!("${decryptedResult}{}", decrypted);
-    
-    Ok(())
-}`;
-}
-
-// 生成 JavaScript 代码示例
-function generateJavaScriptCode(lang, mode, padding, keyLength, outputFormat) {
-    const comments = getCommentTexts(lang, mode, keyLength, outputFormat);
-    const needsIV = mode !== 'ECB';
-    const paddingMethod = padding === 'PKCS7' ? 'pkcs7' :
-        padding === 'PKCS5' ? 'pkcs5' :
-            padding === 'NO_PADDING' ? 'nopadding' : 'pkcs7';
-
-    return `// ${comments.title[lang]}
-
-// ${comments.encrypt[lang]}
-/**
- * ${comments.params[lang]}
- * @param {string} plaintext - ${comments.plaintext[lang]}
- * @param {Uint8Array} key - ${comments.key[lang]}
- * ${needsIV ? `* @param {Uint8Array} iv - ${comments.iv[lang]}\n` : ''}* @returns {string} ${comments.returnEncrypt[lang]}
- */
-async function encryptAES${mode}(plaintext, key${needsIV ? ', iv' : ''}) {
-    // Validate key length
-    if (key.length !== ${keyLength / 8}) {
-        throw new Error(\`Key must be exactly ${keyLength / 8} bytes for AES-${keyLength}\`);
-    }
-    
-    ${needsIV ? `// Validate IV length
-    if (iv.length !== 16) {
-        throw new Error('IV must be exactly 16 bytes');
-    }` : ''}
-    
-    // Convert plaintext to bytes
-    const encoder = new TextEncoder();
-    const plaintextBytes = encoder.encode(plaintext);
-    
-    // Import the key
-    const cryptoKey = await window.crypto.subtle.importKey(
-        'raw',
-        key,
-        { name: 'AES-${mode}', length: ${keyLength} },
-        false,
-        ['encrypt']
-    );
-    
-    // Encrypt
-    const encrypted = await window.crypto.subtle.encrypt(
-        {
-            name: 'AES-${mode}',
-            ${needsIV ? `iv,` : ''}
-            ${mode === 'GCM' ? `tagLength: 128,` : ''}
-        },
-        cryptoKey,
-        plaintextBytes
-    );
-    
-    // Convert to ${outputFormat.toUpperCase()}
-    ${outputFormat === 'base64' ?
-            `return btoa(String.fromCharCode(...new Uint8Array(encrypted)));` :
-            `return Array.from(new Uint8Array(encrypted))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');`}
-}
-
-// ${comments.decrypt[lang]}
-/**
- * ${comments.params[lang]}
- * @param {string} ciphertext - ${comments.ciphertext[lang]}
- * @param {Uint8Array} key - ${comments.key[lang]}
- * ${needsIV ? `* @param {Uint8Array} iv - ${comments.iv[lang]}\n` : ''}* @returns {string} ${comments.returnDecrypt[lang]}
- */
-async function decryptAES${mode}(ciphertext, key${needsIV ? ', iv' : ''}) {
-    // Validate key length
-    if (key.length !== ${keyLength / 8}) {
-        throw new Error(\`Key must be exactly ${keyLength / 8} bytes for AES-${keyLength}\`);
-    }
-    
-    ${needsIV ? `// Validate IV length
-    if (iv.length !== 16) {
-        throw new Error('IV must be exactly 16 bytes');
-    }` : ''}
-    
-    // Convert ${outputFormat.toUpperCase()} to bytes
-    ${outputFormat === 'base64' ?
-            `const encryptedBytes = Uint8Array.from(atob(ciphertext), c => c.charCodeAt(0));` :
-            `const encryptedBytes = new Uint8Array(
-        ciphertext.match(/.{1,2}/g).map(byte => parseInt(byte, 16))
-    );`}
-    
-    // Import the key
-    const cryptoKey = await window.crypto.subtle.importKey(
-        'raw',
-        key,
-        { name: 'AES-${mode}', length: ${keyLength} },
-        false,
-        ['decrypt']
-    );
-    
-    // Decrypt
-    const decrypted = await window.crypto.subtle.decrypt(
-        {
-            name: 'AES-${mode}',
-            ${needsIV ? `iv,` : ''}
-            ${mode === 'GCM' ? `tagLength: 128,` : ''}
-        },
-        cryptoKey,
-        encryptedBytes
-    );
-    
-    // Convert bytes to string
-    const decoder = new TextDecoder();
-    return decoder.decode(decrypted);
-}
-
-// Generate random key
-function generateRandomKey(length) {
-    return crypto.getRandomValues(new Uint8Array(length));
-}
-
-// ${comments.example[lang]}
-// 生成${keyLength / 8}字节的随机密钥
-const key = generateRandomKey(${keyLength / 8});
-${needsIV ? `const iv = generateRandomKey(16);` : ''}
-
-// 加密示例
-const plaintext = "${exampleText}";
-encryptAES${mode}(plaintext, key${needsIV ? ', iv' : ''})
-    .then(encrypted => {
-        console.log("${encryptedResult}" + encrypted);
-        
-        // 解密示例
-        return decryptAES${mode}(encrypted, key${needsIV ? ', iv' : ''});
-    })
-    .then(decrypted => {
-        console.log("${decryptedResult}" + decrypted);
-    })
-    .catch(error => {
-        console.error("Error:", error);
-    });`;
+`;
 }
 
 // 在代码示例更新函数中支持更多参数

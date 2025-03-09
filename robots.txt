@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://aes-encryption-online.com/sitemap.xml
+
+# Disallow access to specific files and directories
+Disallow: /js/
+Disallow: /css/
+Disallow: /*.js$
+Disallow: /*.css$ 
