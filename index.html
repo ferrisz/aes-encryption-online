@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AES加解密工具 | Cryptor</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        secondary: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        },
+                        dark: {
+                            700: '#1e293b',
+                            800: '#1a2234',
+                            900: '#0f172a',
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <!-- Translations -->
+    <script src="js/translations.js"></script>
+</head>
+<body class="dark bg-dark-900 text-gray-100 font-sans min-h-screen">
+    <!-- 主容器 -->
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- 顶部区域：标题和工具栏 -->
+        <header class="mb-8">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-600 rounded-lg mr-3 flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-white text-xl"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-secondary-500" data-i18n="appName">AES Cryptor</h1>
+                    <span class="ml-4 text-sm bg-secondary-800 text-secondary-300 px-2 py-1 rounded-full" data-i18n="tagline">密码学工具</span>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- 语言选择器 -->
+                    <div class="relative">
+                        <select id="language-select" class="bg-dark-800 border border-gray-700 rounded-lg px-3 py-2 text-sm appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <option value="en">English</option>
+                            <option value="zh">中文</option>
+                            <option value="ja">日本語</option>
+                            <option value="ko">한국어</option>
+                            <option value="fr">Français</option>
+                            <option value="de">Deutsch</option>
+                        </select>
+                        <div class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+                            <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- 主题切换 -->
+                    <button class="w-10 h-10 rounded-lg bg-dark-800 border border-gray-700 flex items-center justify-center hover:bg-dark-700 transition-colors">
+                        <i class="fas fa-moon text-yellow-300"></i>
+                    </button>
+                    
+                    <!-- 信息按钮 -->
+                    <button class="w-10 h-10 rounded-lg bg-dark-800 border border-gray-700 flex items-center justify-center hover:bg-dark-700 transition-colors">
+                        <i class="fas fa-info-circle text-gray-400"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <!-- 主内容区域 -->
+        <main class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- 左侧：输入和参数设置 -->
+            <div class="space-y-6">
+                <!-- 输入区域 -->
+                <div class="bg-dark-800 rounded-xl p-5 border border-gray-800">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-medium flex items-center">
+                            <i class="fas fa-pen-alt mr-2 text-primary-400"></i>
+                            <span data-i18n="inputText">输入文本</span>
+                        </h2>
+                        <div class="flex space-x-2">
+                            <button class="bg-dark-700 hover:bg-dark-600 text-xs px-3 py-1.5 rounded-lg flex items-center transition-colors">
+                                <i class="fas fa-eraser mr-1.5"></i>
+                                <span data-i18n="clear">清除</span>
+                            </button>
+                            <button class="bg-dark-700 hover:bg-dark-600 text-xs px-3 py-1.5 rounded-lg flex items-center transition-colors">
+                                <i class="fas fa-random mr-1.5"></i>
+                                <span data-i18n="example">示例</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="relative">
+                        <textarea 
+                            class="w-full h-48 bg-dark-900 border border-gray-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm resize-none" 
+                            placeholder="在这里输入要加密或解密的内容..." data-i18n-placeholder="enterText"></textarea>
+                        
+                        <div class="absolute bottom-3 right-3 flex space-x-2">
+                            <button class="bg-dark-700 hover:bg-dark-600 text-xs px-2 py-1 rounded text-gray-400 hover:text-gray-200 transition-colors" title="上传文件">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                            <button class="bg-dark-700 hover:bg-dark-600 text-xs px-2 py-1 rounded text-gray-400 hover:text-gray-200 transition-colors" title="粘贴">
+                                <i class="fas fa-paste"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 参数设置区域 -->
+                <div class="bg-dark-800 rounded-xl p-5 border border-gray-800">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-medium flex items-center">
+                            <i class="fas fa-sliders-h mr-2 text-secondary-400"></i>
+                            <span data-i18n="encryptionParams">加密参数</span>
+                        </h2>
+                        <button class="bg-dark-700 hover:bg-dark-600 text-xs px-3 py-1.5 rounded-lg flex items-center transition-colors">
+                            <i class="fas fa-undo mr-1.5"></i>
+                            <span data-i18n="reset">重置</span>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <!-- 加密模式 -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1.5" data-i18n="encryptionMode">加密模式</label>
+                            <div class="relative">
+                                <select class="w-full bg-dark-900 border border-gray-700 rounded-lg px-3 py-2 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-primary-500" id="encryption-mode">
+                                    <option value="CBC" data-i18n="cbcMode">CBC (密码块链接)</option>
+                                    <option value="ECB" data-i18n="ecbMode">ECB (电子密码本)</option>
+                                    <option value="CFB" data-i18n="cfbMode">CFB (密码反馈)</option>
+                                    <option value="OFB" data-i18n="ofbMode">OFB (输出反馈)</option>
+                                    <option value="CTR" data-i18n="ctrMode">CTR (计数器)</option>
+                                    <option value="GCM" data-i18n="gcmMode">GCM (伽罗瓦/计数器模式)</option>
+                                </select>
+                                <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 填充方式 -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1.5" data-i18n="paddingMode">填充方式</label>
+                            <div class="relative">
+                                <select class="w-full bg-dark-900 border border-gray-700 rounded-lg px-3 py-2 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-primary-500" id="padding-mode">
+                                    <option value="PKCS7" data-i18n="pkcs7Padding">PKCS7 填充</option>
+                                    <option value="PKCS5" data-i18n="pkcs5Padding">PKCS5 填充</option>
+                                    <option value="ISO10126" data-i18n="iso10126Padding">ISO 10126 填充</option>
+                                    <option value="ANSIX923" data-i18n="ansix923Padding">ANSI X.923 填充</option>
+                                    <option value="NO_PADDING" data-i18n="noPadding">无填充</option>
+                                </select>
+                                <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 密钥长度 -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1.5" data-i18n="keyLength">密钥长度</label>
+                            <div class="relative">
+                                <select class="w-full bg-dark-900 border border-gray-700 rounded-lg px-3 py-2 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-primary-500" id="key-length">
+                                    <option value="128" data-i18n="aes128">AES-128 (128 位)</option>
+                                    <option value="192" data-i18n="aes192">AES-192 (192 位)</option>
+                                    <option value="256" data-i18n="aes256">AES-256 (256 位)</option>
+                                </select>
+                                <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 输出格式 -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1.5" data-i18n="outputFormat">输出格式</label>
+                            <div class="relative">
+                                <select class="w-full bg-dark-900 border border-gray-700 rounded-lg px-3 py-2 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-primary-500" id="output-format">
+                                    <option value="base64" data-i18n="base64Output">Base64</option>
+                                    <option value="hex" data-i18n="hexOutput">十六进制 (HEX)</option>
+                                    <option value="binary" data-i18n="binaryOutput">二进制</option>
+                                </select>
+                                <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 密钥 -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-400 mb-1.5" data-i18n="key">密钥</label>
+                            <div class="relative">
+                                <input 
+                                    type="text" 
+                                    class="w-full bg-dark-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                    placeholder="输入加密密钥" data-i18n-placeholder="enterKey"
+                                />
+                                <button class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300">
+                                    <i class="fas fa-random text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 偏移量 IV -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-400 mb-1.5">
+                                <span data-i18n="iv">偏移量 (IV)</span>
+                                <span class="text-xs text-gray-500 ml-1" data-i18n="ivNote">(仅CBC/CFB/OFB/CTR模式需要)</span>
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    type="text" 
+                                    class="w-full bg-dark-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                    placeholder="输入初始向量 (IV)" data-i18n-placeholder="enterIv"
+                                />
+                                <button class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300">
+                                    <i class="fas fa-random text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 操作按钮 -->
+                    <div class="grid grid-cols-2 gap-4 mt-5">
+                        <button class="bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white rounded-lg py-2.5 px-4 font-medium transition-all duration-200 flex items-center justify-center pulse-animation">
+                            <i class="fas fa-lock mr-2"></i>
+                            <span data-i18n="encrypt">加密</span>
+                        </button>
+                        <button class="bg-gradient-to-r from-secondary-600 to-secondary-500 hover:from-secondary-700 hover:to-secondary-600 text-white rounded-lg py-2.5 px-4 font-medium transition-all duration-200 flex items-center justify-center">
+                            <i class="fas fa-unlock-alt mr-2"></i>
+                            <span data-i18n="decrypt">解密</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧：结果输出 -->
+            <div class="bg-dark-800 rounded-xl p-5 border border-gray-800">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-medium flex items-center">
+                        <i class="fas fa-file-export mr-2 text-primary-400"></i>
+                        <span data-i18n="outputResult">结果输出</span>
+                    </h2>
+                    <div class="flex space-x-2">
+                        <button class="bg-dark-700 hover:bg-dark-600 text-xs px-3 py-1.5 rounded-lg flex items-center transition-colors">
+                            <i class="fas fa-copy mr-1.5"></i>
+                            <span data-i18n="copy">复制</span>
+                        </button>
+                        <button class="bg-dark-700 hover:bg-dark-600 text-xs px-3 py-1.5 rounded-lg flex items-center transition-colors">
+                            <i class="fas fa-download mr-1.5"></i>
+                            <span data-i18n="download">下载</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-dark-900 border border-gray-700 rounded-lg p-3 h-72 overflow-auto">
+                    <pre class="text-sm whitespace-pre-wrap break-all"><code class="text-green-400">U2FsdGVkX19WkZzdEVXVB6OqXpj1zYFfQ2hQVl5/zcOD2a7mLFo8WR5aeXPnGZ7v
+Jk7DIIqpz8f/YnAKP7PJGV9PZNxv+BQ5F0t1n/EDQxBt+yR0pvLS/5+6fCWS+HSs
+J7YRrmk6vcQnJ+sXXTyFR/iQ3M+uuHabvZXN01ogVH3Ww7dhY0Ll9Q==</code></pre>
+                </div>
+                
+                <div class="mt-5">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-base font-medium flex items-center">
+                            <i class="fas fa-info-circle mr-2 text-secondary-400"></i>
+                            <span data-i18n="encryptionInfo">加密信息</span>
+                        </h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-dark-900 rounded-lg p-3 border border-gray-700">
+                            <div class="text-xs text-gray-500 mb-1" data-i18n="encryptionMode">加密模式</div>
+                            <div class="text-sm">CBC (密码块链接)</div>
+                        </div>
+                        <div class="bg-dark-900 rounded-lg p-3 border border-gray-700">
+                            <div class="text-xs text-gray-500 mb-1" data-i18n="paddingMode">填充方式</div>
+                            <div class="text-sm">PKCS7 填充</div>
+                        </div>
+                        <div class="bg-dark-900 rounded-lg p-3 border border-gray-700">
+                            <div class="text-xs text-gray-500 mb-1" data-i18n="keyLength">密钥长度</div>
+                            <div class="text-sm">256 位</div>
+                        </div>
+                        <div class="bg-dark-900 rounded-lg p-3 border border-gray-700">
+                            <div class="text-xs text-gray-500 mb-1" data-i18n="outputFormat">输出格式</div>
+                            <div class="text-sm">Base64</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- 底部：多语言实现代码 -->
+        <section class="mt-8 bg-dark-800 rounded-xl p-5 border border-gray-800">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-medium flex items-center">
+                    <i class="fas fa-code mr-2 text-secondary-400"></i>
+                    <span data-i18n="codeImplementation">多语言实现代码</span>
+                </h2>
+                <div class="text-sm text-gray-400" data-i18n="codeDescription">查看如何在不同编程语言中实现相同的加密效果</div>
+            </div>
+            
+            <!-- 语言选项卡 -->
+            <div class="border-b border-gray-700">
+                <nav class="flex flex-wrap -mb-px">
+                    <button class="inline-flex items-center px-4 py-2 border-b-2 border-primary-500 text-primary-400 text-sm font-medium">
+                        <i class="fab fa-python mr-2"></i>
+                        <span>Python</span>
+                    </button>
+                    <button class="inline-flex items-center px-4 py-2 border-b-2 border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-500 text-sm font-medium">
+                        <i class="fab fa-js-square mr-2"></i>
+                        <span>JavaScript</span>
+                    </button>
+                    <button class="inline-flex items-center px-4 py-2 border-b-2 border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-500 text-sm font-medium">
+                        <i class="fab fa-java mr-2"></i>
+                        <span>Java</span>
+                    </button>
+                    <button class="inline-flex items-center px-4 py-2 border-b-2 border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-500 text-sm font-medium">
+                        <i class="fas fa-code mr-2"></i>
+                        <span>Go</span>
+                    </button>
+                    <button class="inline-flex items-center px-4 py-2 border-b-2 border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-500 text-sm font-medium">
+                        <i class="fas fa-cog mr-2"></i>
+                        <span>Rust</span>
+                    </button>
+                    <button class="inline-flex items-center px-4 py-2 border-b-2 border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-500 text-sm font-medium">
+                        <i class="fas fa-terminal mr-2"></i>
+                        <span>C#</span>
+                    </button>
+                    <button class="inline-flex items-center px-4 py-2 border-b-2 border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-500 text-sm font-medium">
+                        <i class="fas fa-terminal mr-2"></i>
+                        <span>PHP</span>
+                    </button>
+                </nav>
+            </div>
+            
+            <!-- 代码区域 -->
+            <div class="mt-4 relative code-block">
+                <pre class="bg-dark-900 rounded-lg p-4 overflow-x-auto text-sm"><code class="language-python text-gray-300">from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+import base64
+
+def encrypt_aes_cbc(plaintext, key, iv):
+    """
+    使用AES-CBC模式加密文本
+    
+    参数:
+        plaintext (str): 要加密的文本
+        key (bytes): 密钥 (16, 24, 或 32 字节，对应AES-128/192/256)
+        iv (bytes): 初始化向量 (16 字节)
+        
+    返回:
+        str: Base64编码的加密文本
+    """
+    # 将文本转换为字节
+    plaintext_bytes = plaintext.encode('utf-8')
+    
+    # 创建AES密码对象，使用CBC模式
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    
+    # 填充明文并加密
+    padded_data = pad(plaintext_bytes, AES.block_size)
+    ciphertext = cipher.encrypt(padded_data)
+    
+    # 将密文转换为Base64编码的字符串
+    return base64.b64encode(ciphertext).decode('utf-8')
+
+def decrypt_aes_cbc(ciphertext, key, iv):
+    """
+    使用AES-CBC模式解密文本
+    
+    参数:
+        ciphertext (str): Base64编码的加密文本
+        key (bytes): 密钥 (16, 24, 或 32 字节，对应AES-128/192/256)
+        iv (bytes): 初期化向量 (16 字节)
+        
+    返回:
+        str: 解密后的文本
+    """
+    # 将Base64编码的密文转换为字节
+    ciphertext_bytes = base64.b64decode(ciphertext)
+    
+    # 创建AES密码对象，使用CBC模式
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    
+    # 解密并去除填充
+    decrypted_data = cipher.decrypt(ciphertext_bytes)
+    unpadded_data = unpad(decrypted_data, AES.block_size)
+    
+    # 将解密后的字节转换为字符串
+    return unpadded_data.decode('utf-8')
+
+# 示例使用
+key = b'ThisIsA32ByteKey1234567890abcdef'  # 256位密钥
+iv = b'ThisIsA16ByteIV!'                   # 16字节初始化向量
+
+# 加密示例
+plaintext = "这是要加密的敏感数据"
+encrypted = encrypt_aes_cbc(plaintext, key, iv)
+print(f"加密结果: {encrypted}")
+
+# 解密示例
+decrypted = decrypt_aes_cbc(encrypted, key, iv)
+print(f"解密结果: {decrypted}")</code></pre>
+                
+                <button class="copy-btn bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white rounded p-1.5 text-xs flex items-center transition-colors">
+                    <i class="fas fa-copy mr-1"></i>
+                    <span data-i18n="copyCode">复制代码</span>
+                </button>
+            </div>
+        </section>
+        
+        <!-- 页脚 -->
+        <footer class="mt-10 text-center text-gray-500 text-sm">
+            <div class="mb-2 flex justify-center space-x-4">
+                <a href="#" class="hover:text-primary-400 transition-colors">
+                    <i class="fas fa-book mr-1"></i>
+                    <span data-i18n="docs">文档</span>
+                </a>
+                <a href="#" class="hover:text-primary-400 transition-colors">
+                    <i class="fab fa-github mr-1"></i>
+                    <span>GitHub</span>
+                </a>
+                <a href="#" class="hover:text-primary-400 transition-colors">
+                    <i class="fas fa-question-circle mr-1"></i>
+                    <span data-i18n="help">帮助</span>
+                </a>
+            </div>
+            <p data-i18n="copyright">© 2023 AES Cryptor - 安全加密工具</p>
+        </footer>
+    </div>
+    
+    <!-- 主要JavaScript功能 -->
+    <script src="js/main.js"></script>
+</body>
+</html> 
